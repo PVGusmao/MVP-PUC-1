@@ -1,24 +1,37 @@
 from flask import Flask, request, jsonify, make_response
-import json
 from model import Session
 from model.exercise import Exercises
 
 app = Flask(__name__)
 
 
-@app.route('/all', methods=['GET'])
+@app.route('/list-all', methods=['GET'])
 def get_all_exercises():
     session = Session()
 
     try:
         data = session.query(Exercises).all()
 
-        return make_response(jsonify(data), 200)
+        array_exercises = []
+
+        for exercise in data:
+            lib = {
+                "day_serie": exercise.day_serie,
+                "name": exercise.name,
+                "muscle_group": exercise.muscle_group,
+                "series": exercise.series,
+                "series_repeats": exercise.series_repeats,
+            }
+
+            array_exercises.append(lib)
+
+        return make_response(jsonify(array_exercises), 200)
     except Exception as e:
-         error_msg = "Algo deu errado, tente novamente."
-         return make_response(jsonify({
+        error_msg = "Algo deu errado, tente novamente."
+        return make_response(jsonify({
             "message": error_msg,
         }), 400)
+
 
 @app.route('/add-exercise', methods=['POST'])
 def add_exercise():
@@ -36,10 +49,10 @@ def add_exercise():
     for each_element in data:
         if each_element.name == exercise.name:
             return make_response(jsonify({
-            "message": "Já exsite um cadastro com este nome.",
-        }), 409)
+                "message": "Já exsite um cadastro com este nome.",
+            }), 409)
 
-    json_exercise = exercise.jsonified_exercise();
+    json_exercise = exercise.jsonified_exercise()
 
     try:
         session.add(exercise)
@@ -47,7 +60,7 @@ def add_exercise():
         return make_response(jsonify({
             "exercise": json_exercise
         }), 200)
-        
+
     except Exception as e:
         error_msg = "Não foi possível salvar novo item :/"
         print(str(e))
@@ -56,10 +69,12 @@ def add_exercise():
             "message": error_msg,
         }), 400)
 
+
 @app.route('/remove-exercise/<exercise_id>', methods=['DELETE'])
 def remove_exercise(exercise_id):
     session = Session()
-    count = session.query(Exercises).filter(Exercises.id == exercise_id).delete()
+    count = session.query(Exercises).filter(
+        Exercises.id == exercise_id).delete()
     session.commit()
     if count == 1:
         return make_response(jsonify({
