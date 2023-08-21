@@ -26,3 +26,12 @@ class Exercises(Base):
 
         if date_insertion:
             self.date_insertion = date_insertion
+
+    def jsonified_exercise(self, ):
+        return {
+            "day_serie": self.day_serie,
+            "name": self.name,
+            "muscle_group": self.muscle_group,
+            "series": self.series,
+            "series_repeats": self.series_repeats
+        }

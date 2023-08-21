@@ -1,16 +1,24 @@
-from flask import Flask, request, send_from_directory, render_template
-from sqlalchemy.exc import IntegrityError
-
+from flask import Flask, request, jsonify, make_response
+import json
 from model import Session
 from model.exercise import Exercises
 
 app = Flask(__name__)
 
 
-@app.route('/', methods=['GET'])
-def just_a_test():
-    return "Just testing the route"
+@app.route('/all', methods=['GET'])
+def get_all_exercises():
+    session = Session()
 
+    try:
+        data = session.query(Exercises).all()
+
+        return make_response(jsonify(data), 200)
+    except Exception as e:
+         error_msg = "Algo deu errado, tente novamente."
+         return make_response(jsonify({
+            "message": error_msg,
+        }), 400)
 
 @app.route('/add-exercise', methods=['POST'])
 def add_exercise():
@@ -23,98 +31,42 @@ def add_exercise():
         series_repeats=request.json.get("series_repeats"),
     )
 
+    data = session.query(Exercises).all()
+
+    for each_element in data:
+        if each_element.name == exercise.name:
+            return make_response(jsonify({
+            "message": "Já exsite um cadastro com este nome.",
+        }), 409)
+
+    json_exercise = exercise.jsonified_exercise();
+
     try:
         session.add(exercise)
         session.commit()
-        return {
-            "status_code": 200,
-            "status": "success",
-            "exercise": exercise,
-        }
-    except IntegrityError as e:
-        error_msg = "Exercise already exists on database"
-        return {
-            "status_code": 409,
-            "status": "failed",
-            "exercise": exercise,
-            "message": error_msg,
-        }
+        return make_response(jsonify({
+            "exercise": json_exercise
+        }), 200)
+        
     except Exception as e:
         error_msg = "Não foi possível salvar novo item :/"
         print(str(e))
-        return {
-            "status_code": 400,
-            "status": "failed",
+        return make_response(jsonify({
             "exercise": exercise,
             "message": error_msg,
-        }
+        }), 400)
 
-# @app.route('/favicon.ico')
-# def favicon():
-#     return send_from_directory('static', 'favicon.ico', mimetype='image/x-icon')
-
-
-# @app.route('/add_produto', methods=['POST'])
-# def add_produto():
-#     session = Session()
-#     produto = Produto(
-#         nome=request.form.get("nome"),
-#         quantidade=request.form.get("quantidade"),
-#         valor=request.form.get("valor")
-#     )
-#     try:
-#         # adicionando produto
-#         session.add(produto)
-#         # efetivando o camando de adição de novo item na tabela
-#         session.commit()
-#         return render_template("produto.html", produto=produto), 200
-#     except IntegrityError as e:
-#         error_msg = "Produto de mesmo nome já salvo na base :/"
-#         return render_template("error.html", error_code=409, error_msg=error_msg), 409
-#     except Exception as e:
-#         error_msg = "Não foi possível salvar novo item :/"
-#         print(str(e))
-#         return render_template("error.html", error_code=400, error_msg=error_msg), 400
-
-
-# @app.route('/get_produto/<produto_id>', methods=['GET'])
-# def get_produto(produto_id):
-#     session = Session()
-#     produto = session.query(Produto).filter(Produto.id == produto_id).first()
-#     if not produto:
-#         error_msg = "Produto não encontrado na base :/"
-#         return render_template("error.html", error_code= 404, error_msg=error_msg), 404
-#     else:
-#         return render_template("produto.html", produto=produto), 200
-
-
-# @app.route('/del_produto/<produto_id>', methods=['DELETE'])
-# def del_produto(produto_id):
-#     session = Session()
-#     count = session.query(Produto).filter(Produto.id == produto_id).delete()
-#     session.commit()
-#     if count ==1:
-#         return render_template("deletado.html", produto_id=produto_id), 200
-#     else:
-#         error_msg = "Produto não encontrado na base :/"
-#         return render_template("error.html", error_code=404, error_msg=error_msg), 404
-
-
-# @app.route('/add_comentario/<produto_id>', methods=['POST'])
-# def add_comentario(produto_id):
-#     session = Session()
-#     produto = session.query(Produto).filter(Produto.id == produto_id).first()
-#     if not produto:
-#         error_msg = "Produto não encontrado na base :/"
-#         return render_template("error.html", error_code= 404, error_msg=error_msg), 404
-
-#     autor = request.form.get("autor")
-#     texto = request.form.get("texto")
-#     n_estrelas = request.form.get("n_estrela")
-#     if n_estrelas:
-#         n_estrelas = int(n_estrelas)
-
-#     comentario = Comentario(autor, texto, n_estrelas)
-#     produto.adiciona_comentario(comentario)
-#     session.commit()
-#     return render_template("produto.html", produto=produto), 200
+@app.route('/remove-exercise/<exercise_id>', methods=['DELETE'])
+def remove_exercise(exercise_id):
+    session = Session()
+    count = session.query(Exercises).filter(Exercises.id == exercise_id).delete()
+    session.commit()
+    if count == 1:
+        return make_response(jsonify({
+            "message": "Producto excluído com sucesso."
+        }), 200)
+    else:
+        error_msg = "Produto não encontrado."
+        return make_response(jsonify({
+            "message": error_msg
+        }), 404)
