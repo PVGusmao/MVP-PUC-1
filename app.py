@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 
 from controller.exercise import ExerciseController
-from controller.user import UserController
+# from controller.user import UserController
 from model.exercise import Exercises
 
 app = Flask(__name__)
@@ -11,9 +11,9 @@ CORS(app)
 
 @app.route('/login', methods=['POST'])
 def login():
-    user_controller = UserController()
+    # user_controller = UserController()
 
-    email = request.json.get('email')
+    # email = request.json.get('email')
 
     # hashPassword = bcrypt.generate_password_hash('password').decode('utf-8')
 
