@@ -3,6 +3,9 @@ from model import Session
 
 
 class ExerciseController():
+    def __init__():
+        pass
+
     def get_all_exercises(self):
         session = Session()
 
@@ -81,6 +84,6 @@ class ExerciseController():
             print(str(e))
             return {
                 "status": 400,
-                "exercise": exercise,
+                "exercise": json_exercise,
                 "message": error_msg,
             }

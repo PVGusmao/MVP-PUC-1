@@ -1,25 +1,50 @@
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt
+
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 
 from controller.exercise import ExerciseController
-# from controller.user import UserController
+from controller.user import UserController
 from model.exercise import Exercises
+from model.user import User
 
 app = Flask(__name__)
 CORS(app)
+bcrypt = Bcrypt(app)
 
+app.config["JWT_SECRET_KEY"] = "my_secret_key"
+jwt = JWTManager(app)
 
 @app.route('/login', methods=['POST'])
 def login():
-    # user_controller = UserController()
+    email = request.json.get('email')
+    password = request.json.get('password')
 
-    # email = request.json.get('email')
+    hash_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    
+    user_controller = UserController(email, hash_password)
 
-    # hashPassword = bcrypt.generate_password_hash('password').decode('utf-8')
+    user_controller.login()
 
-    # print(hashPassword)
+    return 'User Login'
 
-    return 'oi'
+@app.route('/register-user', methods=['POST'])
+def register_user():
+    user = User(
+        first_name = request.json.get("first_name"),
+        last_name = request.json.get("last_name"),
+        cpf = request.json.get("cpf"),
+        birth_date = request.json.get("birth_date"),
+        email = request.json.get("email"),
+        password = bcrypt.generate_password_hash(request.json.get('password')).decode('utf-8')
+    )
+
+    user_controller = UserController()
+
+    data = user_controller.register_user(user)
+
+    return data
 
 
 @app.route('/list-all', methods=['GET'])
