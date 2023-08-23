@@ -3,9 +3,6 @@ from model import Session
 
 
 class ExerciseController():
-    def __init__():
-        pass
-
     def get_all_exercises(self):
         session = Session()
 

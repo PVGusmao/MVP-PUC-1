@@ -1,3 +1,5 @@
+from flask_jwt_extended import create_access_token
+
 from model.user import User
 from model import Session
 
@@ -13,6 +15,35 @@ class UserController():
     # def login(self, ):
     #     data = self.session.query(User).filter_by(email=self._email)
     #     print(data)
+
+    def login(self, email, password, bcrypt):
+        data = self.session.query(User).filter_by(email=email).first()
+
+        if data == None:
+            return {
+                "status": 404,
+                "message": "E-mail or password invalid, please try again with different credentials."
+            }
+
+        json_data = User.jsonified_exercise(data)
+
+        confirm_password = bcrypt.check_password_hash(
+            json_data['password'], password)
+
+        if confirm_password == False:
+            return {
+                "status": 400,
+                "message": "E-mail or password invalid, please try again with different credentials."
+            }
+
+        token = create_access_token(json_data)
+
+        return {
+            "status": 200,
+            "message": "User logged in successfully.",
+            "token": token,
+            "user": json_data
+        }
 
     def register_user(self, user):
         # data = self.session.query(User).filter_by(email=user.email).first()

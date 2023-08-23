@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
+from flask_jwt_extended import jwt_required, JWTManager
 
 from controller.exercise import ExerciseController
 from controller.user import UserController
@@ -16,28 +16,29 @@ bcrypt = Bcrypt(app)
 app.config["JWT_SECRET_KEY"] = "my_secret_key"
 jwt = JWTManager(app)
 
+
 @app.route('/login', methods=['POST'])
 def login():
     email = request.json.get('email')
     password = request.json.get('password')
 
-    hash_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    
-    user_controller = UserController(email, hash_password)
+    user_controller = UserController()
 
-    user_controller.login()
+    data = user_controller.login(email, password, bcrypt)
 
-    return 'User Login'
+    return make_response(jsonify(data), data['status'])
+
 
 @app.route('/register-user', methods=['POST'])
 def register_user():
     user = User(
-        first_name = request.json.get("first_name"),
-        last_name = request.json.get("last_name"),
-        cpf = request.json.get("cpf"),
-        birth_date = request.json.get("birth_date"),
-        email = request.json.get("email"),
-        password = bcrypt.generate_password_hash(request.json.get('password')).decode('utf-8')
+        first_name=request.json.get("first_name"),
+        last_name=request.json.get("last_name"),
+        cpf=request.json.get("cpf"),
+        birth_date=request.json.get("birth_date"),
+        email=request.json.get("email"),
+        password=bcrypt.generate_password_hash(
+            request.json.get('password')).decode('utf-8')
     )
 
     user_controller = UserController()
@@ -48,6 +49,7 @@ def register_user():
 
 
 @app.route('/list-all', methods=['GET'])
+@jwt_required()
 def get_all_exercises():
     exController = ExerciseController()
 
@@ -57,6 +59,7 @@ def get_all_exercises():
 
 
 @app.route('/add-exercise', methods=['POST'])
+@jwt_required()
 def add_exercise():
     exercise = Exercises(
         day_serie=request.json.get("day_serie"),
@@ -74,6 +77,7 @@ def add_exercise():
 
 
 @app.route('/remove-exercise/<exercise_id>', methods=['DELETE'])
+@jwt_required()
 def remove_exercise(exercise_id):
     exController = ExerciseController()
 
