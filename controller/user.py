@@ -7,18 +7,9 @@ from model import Session
 class UserController():
     session = Session()
 
-    def __init__(self,):
-        pass
-        # hashPassword = bcrypt.generate_password_hash(password).decode('utf-8')
-        # print(hashPassword, bcrypt.check_password_hash(hashPassword, '#Paulo2010.'))
-
-    # def login(self, ):
-    #     data = self.session.query(User).filter_by(email=self._email)
-    #     print(data)
-
     def login(self, email, password, bcrypt):
         data = self.session.query(User).filter_by(email=email).first()
-
+        
         if data == None:
             return {
                 "status": 404,

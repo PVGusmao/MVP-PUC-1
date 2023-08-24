@@ -26,7 +26,7 @@ def login():
 
     data = user_controller.login(email, password, bcrypt)
 
-    return make_response(jsonify(data), data['status'])
+    return make_response(jsonify('data'), data['status'])
 
 
 @app.route('/register-user', methods=['POST'])

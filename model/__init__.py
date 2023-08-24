@@ -9,7 +9,7 @@ from model.base import Base
 db_url = 'sqlite:///database/db.sqlite3'
 
 # cria a engine de conexão com o banco
-engine = create_engine(db_url, echo=False)
+engine = create_engine(db_url, echo=False, connect_args={"check_same_thread": False})
 
 # Instancia um criador de seção com o banco
 Session = sessionmaker(bind=engine)
