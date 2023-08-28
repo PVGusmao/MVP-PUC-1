@@ -52,6 +52,7 @@ class UserController():
         except Exception as e:
             error_msg = "Não foi possível salvar novo item :/"
             print(str(e))
+            self.session.rollback()
             return {
                 "status": 400,
                 "user": json_user,
