@@ -48,7 +48,7 @@ def register_user():
     return data
 
 
-@app.route('/list-all', methods=['GET'])
+@app.route('/exercise/list', methods=['GET'])
 @jwt_required()
 def get_all_exercises():
     exController = ExerciseController()
@@ -58,7 +58,7 @@ def get_all_exercises():
     return make_response(data['data'], data['status'])
 
 
-@app.route('/add-exercise', methods=['POST'])
+@app.route('/exercise/add', methods=['POST'])
 @jwt_required()
 def add_exercise():
     exercise = Exercises(
@@ -76,7 +76,7 @@ def add_exercise():
     return make_response(jsonify(new_data), new_data['status'])
 
 
-@app.route('/remove-exercise/<exercise_id>', methods=['DELETE'])
+@app.route('/exercise/remove/<exercise_id>', methods=['DELETE'])
 @jwt_required()
 def remove_exercise(exercise_id):
     exController = ExerciseController()
