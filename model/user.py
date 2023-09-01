@@ -31,6 +31,7 @@ class User(Base):
 
     def jsonified_exercise(self, ):
         return {
+            "id": self.id,
             "first_name": self.first_name,
             "last_name": self.last_name,
             "cpf": self.cpf,

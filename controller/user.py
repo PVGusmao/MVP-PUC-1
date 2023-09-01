@@ -9,7 +9,7 @@ class UserController():
 
     def login(self, email, password, bcrypt):
         data = self.session.query(User).filter_by(email=email).first()
-        
+
         if data == None:
             return {
                 "status": 404,

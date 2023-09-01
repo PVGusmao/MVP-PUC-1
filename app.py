@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 
-from flask_jwt_extended import jwt_required, JWTManager
+from flask_jwt_extended import jwt_required, JWTManager, get_jwt_identity
 
 from controller.exercise import ExerciseController
 from controller.user import UserController
@@ -61,12 +61,17 @@ def get_all_exercises():
 @app.route('/exercise/add', methods=['POST'])
 @jwt_required()
 def add_exercise():
+    user = get_jwt_identity()
+
     exercise = Exercises(
         day_serie=request.json.get("day_serie"),
         name=request.json.get("name"),
         muscle_group=request.json.get("muscle_group"),
+        video_exercise=request.json.get("video_exercise"),
         series=request.json.get("series"),
         series_repeats=request.json.get("series_repeats"),
+        identify=request.json.get("identify"),
+        user_id=user['id'],
     )
 
     exercise_controller = ExerciseController()
