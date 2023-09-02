@@ -55,7 +55,19 @@ def get_all_exercises():
 
     data = exController.get_all_exercises()
 
-    return make_response(data['data'], data['status'])
+    return make_response(jsonify(data), data['status'])
+
+
+@app.route('/exercise/lastserie', methods=['GET'])
+@jwt_required()
+def get_last_serie():
+    exController = ExerciseController()
+
+    data = exController.get_last_serie()
+
+    print(data)
+
+    return make_response(jsonify(data), data['status'])
 
 
 @app.route('/exercise/add', methods=['POST'])

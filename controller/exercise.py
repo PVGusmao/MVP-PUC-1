@@ -1,6 +1,8 @@
 from model.exercise import Exercises
 from model import Session
+from flask import jsonify
 
+from sqlalchemy import func
 
 class ExerciseController():
     def get_all_exercises(self):
@@ -15,23 +17,54 @@ class ExerciseController():
                 lib = {
                     "day_serie": exercise.day_serie,
                     "name": exercise.name,
+                    "video_exercise": exercise.video_exercise,
                     "muscle_group": exercise.muscle_group,
                     "series": exercise.series,
                     "series_repeats": exercise.series_repeats,
+                    "identify": exercise.identify,
+                    "user_id": exercise.user_id
                 }
 
                 array_exercises.append(lib)
-
+           
             return {
                 "status": 200,
+                "message": "Produto listado",
                 "data": array_exercises,
             }
+       
         except Exception as e:
             error_msg = "Algo deu errado, tente novamente."
             return {
                 "status": 400,
                 "message": error_msg,
             }
+
+    def get_last_serie(self):
+        session = Session()
+
+        try:
+            data = session.query(Exercises).all()
+            
+            largest_identify = 0
+
+            for exercise in data:
+                if largest_identify < exercise.identify:
+                    largest_identify = exercise.identify
+
+            return {
+                "status": 200,
+                "message": "Identificador da última série criada.",
+                "data": largest_identify,
+            }
+       
+        except Exception as e:
+            error_msg = "Algo deu errado, tente novamente."
+            return {
+                "status": 400,
+                "message": error_msg,
+            }
+
 
     def remove_exercise(self, exercise_id):
         session = Session()
