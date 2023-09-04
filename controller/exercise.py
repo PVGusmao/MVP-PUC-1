@@ -26,13 +26,13 @@ class ExerciseController():
                 }
 
                 array_exercises.append(lib)
-           
+
             return {
                 "status": 200,
                 "message": "Produto listado",
                 "data": array_exercises,
             }
-       
+
         except Exception as e:
             error_msg = "Algo deu errado, tente novamente."
             return {
@@ -57,7 +57,7 @@ class ExerciseController():
                 "message": "Identificador da última série criada.",
                 "data": largest_identify,
             }
-       
+
         except Exception as e:
             error_msg = "Algo deu errado, tente novamente."
             return {
@@ -86,7 +86,6 @@ class ExerciseController():
                 "message": error_msg
             }
 
-        pass
 
     def add_exercise(self, exercise):
         session = Session()

@@ -65,8 +65,6 @@ def get_last_serie():
 
     data = exController.get_last_serie()
 
-    print(data)
-
     return make_response(jsonify(data), data['status'])
 
 
@@ -75,23 +73,33 @@ def get_last_serie():
 def add_exercise():
     user = get_jwt_identity()
 
-    exercise = Exercises(
-        day_serie=request.json.get("day_serie"),
-        name=request.json.get("name"),
-        muscle_group=request.json.get("muscle_group"),
-        video_exercise=request.json.get("video_exercise"),
-        series=request.json.get("series"),
-        series_repeats=request.json.get("series_repeats"),
-        identify=request.json.get("identify"),
-        user_id=user['id'],
-    )
+    day_serie = request.json.get("day_serie")
+    identify = request.json.get("identify")
+    exercises = request.json.get("exercises")
 
-    exercise_controller = ExerciseController()
+    new_data = 0
 
-    new_data = exercise_controller.add_exercise(exercise)
+    for each in exercises:
+        exercise = Exercises(
+            day_serie=day_serie,
+            name=each["name"],
+            muscle_group=each["muscle_group"],
+            video_exercise=None,
+            series=each["series"],
+            series_repeats=each["series_repeats"],
+            identify=identify,
+            user_id=user['id'],
+        )
 
-    return make_response(jsonify(new_data), new_data['status'])
+        exercise_controller = ExerciseController()
 
+        new_data = exercise_controller.add_exercise(exercise)
+
+        if new_data['status'] != 200:
+            break
+
+    return make_response(jsonify(new_data), new_data["status"])
+    
 
 @app.route('/exercise/remove/<exercise_id>', methods=['DELETE'])
 @jwt_required()
