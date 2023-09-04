@@ -51,9 +51,12 @@ def register_user():
 @app.route('/exercise/list', methods=['GET'])
 @jwt_required()
 def get_all_exercises():
+    user = get_jwt_identity()
+    user_id = user["id"]
+
     exController = ExerciseController()
 
-    data = exController.get_all_exercises()
+    data = exController.get_all_exercises(user_id)
 
     return make_response(jsonify(data), data['status'])
 
@@ -61,9 +64,12 @@ def get_all_exercises():
 @app.route('/exercise/lastserie', methods=['GET'])
 @jwt_required()
 def get_last_serie():
+    user = get_jwt_identity()
+    user_id = user["id"]
+
     exController = ExerciseController()
 
-    data = exController.get_last_serie()
+    data = exController.get_last_serie(user_id)
 
     return make_response(jsonify(data), data['status'])
 
@@ -99,7 +105,7 @@ def add_exercise():
             break
 
     return make_response(jsonify(new_data), new_data["status"])
-    
+
 
 @app.route('/exercise/remove/<exercise_id>', methods=['DELETE'])
 @jwt_required()
