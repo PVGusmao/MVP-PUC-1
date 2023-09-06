@@ -1,4 +1,4 @@
-#!/home/paulo/puc/MVP-PUC-1/venv/bin/python
+#!/home/sorinesavage/puc/MVP-PUC-1/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
