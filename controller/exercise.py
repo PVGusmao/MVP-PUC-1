@@ -1,7 +1,6 @@
 from model.exercise import Exercises
 from model import Session
 
-
 class ExerciseController():
     def get_all_exercises(self, user_id):
         session = Session()
