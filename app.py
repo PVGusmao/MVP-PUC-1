@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 
-from flask_restx import Api
+from flask_restx import Api, Resource
 
 from flask_jwt_extended import jwt_required, JWTManager, get_jwt_identity
 
@@ -19,12 +19,24 @@ app.config["JWT_SECRET_KEY"] = "my_secret_key"
 jwt = JWTManager(app)
 
 api = Api(app,
-            title="Example API application",
-            description="An example API application using flask-restx",
-            version="1.0",
-            doc="/swagger/",
-            validate=True)
+    title="Example API application",
+    description="An example API application using flask-restx",
+    version="1.0",
+    doc="/swagger",
+    validate=True)
 
+
+@api.route('/auth')
+class Auth(Resource):
+    def post(self, ):
+        email = request.json.get('email')
+        password = request.json.get('password')
+
+        user_controller = UserController()
+
+        data = user_controller.login(email, password, bcrypt)
+
+        return make_response(jsonify(data), data['status'])
 
 @app.route('/login', methods=['POST'])
 def login():
