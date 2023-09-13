@@ -37,9 +37,8 @@ class UserController():
         }
 
     def register_user(self, user):
-        # data = self.session.query(User).filter_by(email=user.email).first()
-
         json_user = user.jsonified_exercise()
+        print(json_user)
 
         try:
             self.session.add(user)
