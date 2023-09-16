@@ -14,7 +14,7 @@ from model.user import User
 from swagger.api.instance import server
 from swagger.models.auth import user
 from swagger.models.register import register
-# from swagger.models.exercise import exercise_register
+from swagger.models.exercise import exercise_register
 
 app, api = server.app, server.api
 
@@ -25,7 +25,7 @@ bcrypt = Bcrypt(app)
 app.config["JWT_SECRET_KEY"] = "my_secret_key"
 jwt = JWTManager(app)
 
-@api.route('/auth')
+@api.route('/login')
 class Auth(Resource):
     @api.doc(body=user)
     def post(self, ):
@@ -73,7 +73,7 @@ class Exercise(Resource):
 
         return make_response(jsonify(data), data['status'])
 
-    # @api.doc(body=exercise_register)
+    @api.doc(body=exercise_register)
     @jwt_required()
     def post(self,):
         user = get_jwt_identity()
@@ -105,10 +105,9 @@ class Exercise(Resource):
 
         return make_response(jsonify(new_data), new_data["status"])
 
-
-@app.route('/exercise/remove/<exercise_id>', methods=['DELETE'])
+@app.route('/exercise/remove/<exercise_id>')
 @jwt_required()
-def remove_exercise(exercise_id):
+def delete(self, exercise_id):
     exController = ExerciseController()
 
     data = exController.remove_exercise(exercise_id)

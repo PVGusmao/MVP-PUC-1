@@ -9,7 +9,16 @@ class Server():
             description="Designed to perform all the requests from mvp api - Gym Bro",
             version="1.0",
             doc="/docs",
-            validate=True
+            validate=True,
+            security='apikey',
+            authorizations = {
+                'apikey': {
+                    'type': 'apiKey',
+                    'in': 'header',
+                    'name': 'Authorization',
+                    'description': "Adicione o valor do token jwt no input abaixo."
+                }
+            }
         )
     
     def run (self, ):
