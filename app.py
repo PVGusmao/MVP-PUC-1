@@ -57,7 +57,7 @@ class Register(Resource):
 
         data = user_controller.register_user(user)
 
-        return data
+        return make_response(jsonify(data), data['status'])
 
 
 @api.route('/exercise')
