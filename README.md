@@ -15,7 +15,7 @@ Instalacao de dependencias via pip
 
 Para rodar a aplicacao basta das o comando
 
--flask run
+- flask run
 
 Para debugar o programa basta dar o comando
 
