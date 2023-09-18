@@ -32,7 +32,7 @@ class UserController():
         return {
             "status": 200,
             "message": "User logged in successfully.",
-            "token": token,
+            "token": 'Bearer' + ' ' + token,
             "user": json_data
         }
 
